@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refugio - Tu Santuario de Calma y Concentración</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de la fuente Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos de Lucide -->
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide.min.js"></script>
+
+    <style>
+        /* Aplicar la fuente Inter a todo el cuerpo */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Color de fondo suave para toda la página */
+        html {
+            background-color: #f0f9ff; /* blue-50 */
+            scroll-behavior: smooth; /* Desplazamiento suave */
+        }
+    </style>
+</head>
+<body class="bg-blue-50 text-gray-800">
+
+    <!-- 1. Encabezado / Barra de Navegación -->
+    <nav class="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="#" class="font-extrabold text-3xl text-blue-600">
+                    Refugio
+                </a>
+                
+                <!-- Enlaces de Navegación (Escritorio) -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#funciones" class="text-gray-600 hover:text-blue-600 transition-colors">Funciones</a>
+                    <a href="#como-funciona" class="text-gray-600 hover:text-blue-600 transition-colors">Cómo Funciona</a>
+                    <a href="#acerca-de" class="text-gray-600 hover:text-blue-600 transition-colors">Acerca de</a>
+                    <a href="#blog" class="text-gray-600 hover:text-blue-600 transition-colors">Blog</a>
+                    <a href="#precios" class="text-gray-600 hover:text-blue-600 transition-colors">Precios</a>
+                    <a href="#contacto" class="text-gray-600 hover:text-blue-600 transition-colors">Contacto</a>
+                </div>
+                
+                <!-- Botón de Llamada a la Acción (Escritorio) -->
+                <a href="#" class="hidden md:block bg-blue-600 text-white py-2 px-6 rounded-full font-semibold shadow-lg hover:bg-blue-700 transition-transform transform hover:scale-105">
+                    Descarga Gratis
+                </a>
+
+                <!-- Botón de Menú (Móvil) -->
+                <button id="menu-btn" class="md:hidden text-blue-600">
+                    <svg id="menu-open-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    <svg id="menu-close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+        <!-- Menú Móvil -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg">
+            <a href="#funciones" class="block py-3 px-6 text-gray-700 hover:bg-blue-50">Funciones</a>
+            <a href="#como-funciona" class="block py-3 px-6 text-gray-700 hover:bg-blue-50">Cómo Funciona</a>
+            <a href="#acerca-de" class="block py-3 px-6 text-gray-700 hover:bg-blue-50">Acerca de</a>
+            <a href="#blog" class="block py-3 px-6 text-gray-700 hover:bg-blue-50">Blog</a>
+            <a href="#precios" class="block py-3 px-6 text-gray-700 hover:bg-blue-50">Precios</a>
+            <a href="#contacto" class="block py-3 px-6 text-gray-700 hover:bg-blue-50">Contacto</a>
+            <a href="#" class="block py-4 px-6 bg-blue-600 text-white text-center font-semibold rounded-b-lg">Descarga Gratis</a>
+        </div>
+    </nav>
+
+    <!-- 2. Sección Principal (Hero Section) -->
+    <header class="container mx-auto px-6 pt-16 pb-24 md:pt-24 md:pb-32">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <!-- Columna de Texto -->
+            <div>
+                <h1 class="text-5xl md:text-6xl font-extrabold text-blue-900 leading-tight">
+                    Encuentra Tu Foco.
+                    <span class="block text-blue-600">Construye Tu Santuario.</span>
+                </h1>
+                <p class="mt-6 text-lg text-gray-700 max-w-lg">
+                    La aplicación y el kit de bienestar todo-en-uno que te ayudan a bloquear el ruido, vencer la procrastinación y crear el espacio perfecto para estudiar y tener paz mental.
+                </p>
+                <!-- Botones de Acción -->
+                <div class="mt-10 flex flex-col sm:flex-row gap-4">
+                    <a href="#" class="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-full font-semibold text-center shadow-xl hover:bg-blue-700 transition-transform transform hover:scale-105">
+                        Descarga la App
+                    </a>
+                    <a href="#" class="w-full sm:w-auto bg-white text-blue-600 border-2 border-blue-600 py-3 px-8 rounded-full font-semibold text-center hover:bg-blue-50 transition-colors">
+                        Explora el Kit
+                    </a>
+                </div>
+            </div>
+            <!-- Columna Visual -->
+            <div class="hidden md:block">
+                <img src="https://placehold.co/600x450/93c5fd/1e3a8a?text=App+y+Kit+Refugio" alt="Maqueta de la app Refugio y el kit de bienestar" class="rounded-2xl shadow-2xl">
+            </div>
+        </div>
+    </header>
+
+    <!-- 3. Sección del Problema ("¿Te Suena Familiar?") -->
+    <section id="como-funciona" class="bg-white py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-4">
+                ¿Te suena familiar?
+            </h2>
+            <p class="text-center text-lg text-gray-600 max-w-2xl mx-auto mb-16">
+                Enfrentar los estudios puede ser un desafío. Estás haciendo lo mejor que puedes, pero a veces el entorno no ayuda.
+            </p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Tarjeta de Problema 1 -->
+                <div class="bg-blue-50 p-8 rounded-2xl shadow-lg border border-blue-100">
+                    <div class="bg-blue-200 text-blue-700 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.636 5.636a9 9 0 0112.728 0m-2.829 9.9a5 5 0 01-7.072 0"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-900 mb-2">Ruido Constante</h3>
+                    <p class="text-gray-700">El ruido de la casa, la calle o las notificaciones hacen imposible que te puedas concentrar.</p>
+                </div>
+                <!-- Tarjeta de Problema 2 -->
+                <div class="bg-blue-50 p-8 rounded-2xl shadow-lg border border-blue-100">
+                    <div class="bg-blue-200 text-blue-700 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-900 mb-2">Procrastinación y Estrés</h3>
+                    <p class="text-gray-700">Las fechas de entrega se acumulan, el estrés aumenta y te sientes culpable por no poder empezar.</p>
+                </div>
+                <!-- Tarjeta de Problema 3 -->
+                <div class="bg-blue-50 p-8 rounded-2xl shadow-lg border border-blue-100">
+                    <div class="bg-blue-200 text-blue-700 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343m11.314 11.314a8 8 0 01-11.314 0m11.314 0L6.343 7.343"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-blue-900 mb-2">Agobio Constante</h3>
+                    <p class="text-gray-700">Te sientes abrumado, sin un espacio propio para simplemente respirar y recargar energías.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Sección de la Solución ("Tu Rincón Personal...") -->
+    <section id="funciones" class="py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-16">
+                Tu Rincón Personal te Espera
+            </h2>
+            
+            <!-- Característica 1: La App -->
+            <div class="grid md:grid-cols-2 gap-12 items-center mb-20">
+                <div class="relative">
+                    <img src="https://placehold.co/500x550/60a5fa/ffffff?text=Interfaz+de+la+App" alt="Interfaz de la App Refugio" class="rounded-2xl shadow-2xl">
+                </div>
+                <div>
+                    <span class="text-blue-600 font-semibold uppercase">El Santuario Digital</span>
+                    <h3 class="text-3xl font-bold text-blue-900 mt-2 mb-6">
+                        La App Refugio
+                    </h3>
+                    <p class="text-gray-700 text-lg mb-6">
+                        Toma el control de tu mente y tu tiempo. Nuestra app está diseñada para ser tu centro de mando para la calma y la productividad.
+                    </p>
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <span class="bg-green-200 text-green-700 p-1 rounded-full mr-3 mt-1 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Módulo de Enfoque</h4>
+                                <p class="text-gray-600">Sumérgete en nuestra biblioteca de sonidos (lluvia, bosque, cafetería) y usa el temporizador Pomodoro para organizar tus sesiones de estudio.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-green-200 text-green-700 p-1 rounded-full mr-3 mt-1 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Módulo de Bienestar</h4>
+                                <p class="text-gray-600">Calma la ansiedad con ejercicios de respiración guiados y meditaciones cortas. Registra tus pensamientos en el diario personal.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-green-200 text-green-700 p-1 rounded-full mr-3 mt-1 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Modo "Santuario"</h4>
+                                <p class="text-gray-600">Bloquea todas las notificaciones de otras apps con un solo toque para una inmersión total en tus tareas.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Característica 2: El Kit -->
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="md:order-2">
+                    <img src="https://placehold.co/500x550/3b82f6/ffffff?text=Kit+Mi+Refugio" alt="Contenido del Kit Mi Refugio" class="rounded-2xl shadow-2xl">
+                </div>
+                <div class="md:order-1">
+                    <span class="text-blue-600 font-semibold uppercase">Las Herramientas Físicas</span>
+                    <h3 class="text-3xl font-bold text-blue-900 mt-2 mb-6">
+                        El Kit "Mi Refugio"
+                    </h3>
+                    <p class="text-gray-700 text-lg mb-6">
+                        Complementa tu santuario digital con herramientas físicas que aislan tus sentidos y calman tu entorno.
+                    </p>
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <span class="bg-green-200 text-green-700 p-1 rounded-full mr-3 mt-1 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Auriculares de Alta Fidelidad</h4>
+                                <p class="text-gray-600">Diseñados para ser cómodos durante horas y bloquear el ruido exterior, permitiéndote sumergirte en los sonidos de la app.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-green-200 text-green-700 p-1 rounded-full mr-3 mt-1 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Set de Aromaterapia</h4>
+                                <p class="text-gray-600">Incluye un difusor pequeño y esencias de lavanda y menta para ayudar a calmar la mente y mejorar la concentración.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="bg-green-200 text-green-700 p-1 rounded-full mr-3 mt-1 flex-shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </span>
+                            <div>
+                                <h4 class="font-semibold text-blue-900">Diario Físico Guiado</h4>
+                                <p class="text-gray-600">Un diario de alta calidad diseñado para organizar tus ideas, establecer metas y practicar la gratitud sin pantallas.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Sección "Acerca de Nosotros" -->
+    <section id="acerca-de" class="bg-white py-24">
+        <div class="container mx-auto px-6 max-w-4xl">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <img src="https://placehold.co/500x400/bfdbfe/1e3a8a?text=Nuestro+Equipo" alt="Equipo de Refugio" class="rounded-2xl shadow-xl">
+                </div>
+                <div>
+                    <span class="text-blue-600 font-semibold uppercase">Nuestra Misión</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mt-2 mb-6">
+                        Tu Espacio de Paz
+                    </h2>
+                    <p class="text-gray-700 mb-4">
+                        "Refugio" nació de nuestra propia experiencia como estudiantes. Entendemos la presión, el estrés y la constante lucha por encontrar un rincón de paz para concentrarse.
+                    </p>
+                    <p class="text-gray-700">
+                        Por eso, creamos una herramienta que nos hubiera encantado tener: un aliado para construir tu propio santuario de calma y enfoque en medio del caos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Sección de Blog -->
+    <section id="blog" class="py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-4">
+                Nuestro Rincón de Ideas y Bienestar
+            </h2>
+            <p class="text-center text-lg text-gray-600 max-w-2xl mx-auto mb-16">
+                Consejos, técnicas e inspiración para ayudarte en tu vida como estudiante.
+            </p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Artículo 1 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                    <img src="https://placehold.co/400x250/93c5fd/1e3a8a?text=Procrastinación" alt="Artículo sobre procrastinación" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-semibold text-blue-900 mb-3">5 Técnicas Simples para Vencer la Procrastinación</h3>
+                        <p class="text-gray-700 mb-6 flex-grow">Descubre métodos como el Pomodoro y la regla de los 2 minutos para empezar hoy mismo.</p>
+                        <a href="#" class="font-semibold text-blue-600 hover:text-blue-800">Leer más &rarr;</a>
+                    </div>
+                </div>
+                <!-- Artículo 2 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                    <img src="https://placehold.co/400x250/60a5fa/1e3a8a?text=Espacio+de+Estudio" alt="Artículo sobre espacio de estudio" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-semibold text-blue-900 mb-3">Tu Guía para Crear el Espacio de Estudio Perfecto</h3>
+                        <p class="text-gray-700 mb-6 flex-grow">Consejos sobre iluminación, organización y cómo usar tu kit para crear un ambiente ideal.</p>
+                        <a href="#" class="font-semibold text-blue-600 hover:text-blue-800">Leer más &rarr;</a>
+                    </div>
+                </div>
+                <!-- Artículo 3 -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex flex-col">
+                    <img src="https://placehold.co/400x250/3b82f6/1e3a8a?text=Música+o+Silencio" alt="Artículo sobre música y silencio" class="w-full h-48 object-cover">
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-semibold text-blue-900 mb-3">Música o Silencio: ¿Qué es Mejor para Concentrarse?</h3>
+                        <p class="text-gray-700 mb-6 flex-grow">Un análisis sobre los beneficios de los diferentes tipos de audio a la hora de estudiar.</p>
+                        <a href="#" class="font-semibold text-blue-600 hover:text-blue-800">Leer más &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Sección de Llamada a la Acción / Precios -->
+    <section id="precios" class="bg-white py-24">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-16">
+                Elige Tu Refugio
+            </h2>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- Tarjeta de Precios 1: App -->
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-8 flex flex-col">
+                    <h3 class="text-2xl font-bold text-blue-900 mb-4">La App Refugio</h3>
+                    <div class="text-5xl font-extrabold text-blue-900 mb-6">
+                        Gratis
+                        <span class="text-lg font-normal text-gray-600">/ para siempre</span>
+                    </div>
+                    <p class="text-gray-700 mb-6 flex-grow">Funciones esenciales para empezar a construir tu santuario digital hoy mismo.</p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Biblioteca de sonidos básicos
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Temporizador Pomodoro
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Diario personal básico
+                        </li>
+                    </ul>
+                    <a href="#" class="w-full bg-white text-blue-600 border-2 border-blue-600 py-3 px-8 rounded-full font-semibold text-center hover:bg-blue-100 transition-colors">
+                        Descargar Ahora
+                    </a>
+                </div>
+
+                <!-- Tarjeta de Precios 2: Kit -->
+                <div class="bg-blue-600 text-white rounded-2xl p-8 shadow-2xl flex flex-col ring-4 ring-blue-300">
+                    <h3 class="text-2xl font-bold mb-4">El Kit "Mi Refugio"</h3>
+                    <div class="text-5xl font-extrabold mb-6">
+                        $49.99
+                        <span class="text-lg font-normal text-blue-100">/ pago único</span>
+                    </div>
+                    <p class="text-blue-100 mb-6 flex-grow">La experiencia física completa para aislarte del caos y potenciar tu app.</p>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Auriculares de alta fidelidad
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Set de aromaterapia (3 esencias)
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 text-green-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Diario de productividad físico
+                        </li>
+                    </ul>
+                    <!-- CORRECCIÓN: Añadido id="comprar-btn" -->
+                    <a href="#" id="comprar-btn" class="w-full bg-white text-blue-600 py-3 px-8 rounded-full font-semibold text-center shadow-lg hover:bg-blue-100 transition-colors transform hover:scale-105">
+                        Comprar el Kit
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Sección de Contacto -->
+    <section id="contacto" class="py-24">
+        <div class="container mx-auto px-6 max-w-3xl">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-blue-900 mb-4">
+                ¿Hablamos?
+            </h2>
+            <p class="text-center text-lg text-gray-600 max-w-xl mx-auto mb-12">
+                ¿Tienes preguntas, sugerencias o simplemente quieres saludar? Escríbenos. Estamos aquí para ayudarte a construir tu espacio de paz.
+            </p>
+            <form action="https://formspree.io/f/xovkgzgq" method="POST" class="bg-white p-8 md:p-12 rounded-2xl shadow-xl">
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="nombre" class="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
+                        <!-- CORRECCIÓN: "nombre" cambiado a "name" para Formspree -->
+                        <input type="text" id="nombre" name="name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tu nombre" required>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="tu@correo.com" required>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <label for="asunto" class="block text-sm font-semibold text-gray-700 mb-2">Asunto</label>
+                    <!-- CORRECCIÓN: "asunto" cambiado a "subject" para Formspree -->
+                    <input type="text" id="asunto" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="¿Sobre qué quieres hablar?" required>
+                </div>
+                <div class="mt-6">
+                    <label for="mensaje" class="block text-sm font-semibold text-gray-700 mb-2">Mensaje</label>
+                    <!-- CORRECCIÓN: "mensaje" cambiado a "message" para Formspree -->
+                    <textarea id="mensaje" name="message" rows="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escribe tu mensaje aquí..." required></textarea>
+
+                </div>
+                <div class="mt-8 text-center">
+                    <button type="submit" class="w-full sm:w-auto bg-blue-600 text-white py-3 px-12 rounded-full font-semibold text-center shadow-xl hover:bg-blue-700 transition-transform transform hover:scale-105">
+                        Enviar Mensaje
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- AÑADIDO: Modal de Compra (Oculto por defecto) -->
+    <div id="compra-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-8 md:p-12 relative m-4">
+            <!-- Botón de Cerrar Modal -->
+            <button id="cerrar-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <h2 class="text-3xl font-bold text-blue-900 mb-6">Completa tu Compra</h2>
+            <div id="compra-form-message" class="hidden mb-6 p-4 rounded-lg"></div>
+
+            <form id="compra-form">
+                <div class="mb-4">
+                    <label for="nombre-compra" class="block text-sm font-semibold text-gray-700 mb-2">Nombre Completo</label>
+                    <input type="text" id="nombre-compra" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tu nombre" required>
+                </div>
+                <div class="mb-4">
+                    <label for="email-compra" class="block text-sm font-semibold text-gray-700 mb-2">Correo Electrónico</label>
+                    <input type="email" id="email-compra" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="tu@correo.com" required>
+                </div>
+                <div class="mb-4">
+                    <label for="direccion-compra" class="block text-sm font-semibold text-gray-700 mb-2">Dirección de Envío</label>
+                    <input type="text" id="direccion-compra" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Tu dirección" required>
+                </div>
+                <div class="mb-6">
+                    <label for="tarjeta-compra" class="block text-sm font-semibold text-gray-700 mb-2">Información de Pago</label>
+                    <div class="border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 text-gray-500">
+                        (Simulación de pasarela de pago)
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-3 px-12 rounded-full font-semibold text-center shadow-xl hover:bg-blue-700 transition-transform transform hover:scale-105">
+                        Pagar $49.99
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 9. Pie de Página (Footer) -->
+    <footer id="footer" class="bg-blue-900 text-blue-200 py-16">
+        <div class="container mx-auto px-6 grid md:grid-cols-4 gap-12">
+            <!-- Columna 1: Logo y Redes -->
+            <div>
+                <a href="#" class="font-extrabold text-3xl text-white mb-4 block">
+                    Refugio
+                </a>
+                <p class="text-blue-300 mb-6">Tu santuario personal para la calma y la concentración.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-blue-200 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.227-1.691 4.771-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.227-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.691-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163zm0 1.626c-3.141 0-3.505.012-4.725.068-2.67.122-3.803 1.256-3.921 3.921C3.314 8.92 3.302 9.284 3.302 12s.012 3.08.068 4.725c.118 2.665 1.252 3.803 3.921 3.921C8.495 20.686 8.859 20.698 12 20.698s3.08-.012 4.725-.068c2.669-.118 3.807-1.256 3.925-3.921.054-1.645.068-2.009.068-4.725s-.014-3.08-.068-4.725c-.118-2.665-1.256-3.803-3.925-3.921C15.505 3.814 15.141 3.802 12 3.802zM12 7.118c-2.704 0-4.882 2.178-4.882 4.882s2.178 4.882 4.882 4.882 4.882-2.178 4.882-4.882S14.704 7.118 12 7.118zm0 7.961c-1.695 0-3.079-1.384-3.079-3.079s1.384-3.079 3.079-3.079 3.079 1.384 3.079 3.079-1.384 3.079-3.079 3.079zM19.102 6.444c-.757 0-1.37.613-1.37 1.37s.613 1.37 1.37 1.37 1.37-.613 1.37-1.37-.613-1.37-1.37-1.37z" /></svg></a>
+                    <a href="#" class="text-blue-200 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35C.59 0 0 .59 0 1.325v21.35C0 23.41.59 24 1.325 24H12.82v-9.29h-3.128v-3.622h3.128V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12V24h6.116c.735 0 1.325-.59 1.325-1.325v-21.35C24 .59 23.41 0 22.675 0z" /></svg></a>
+                    <a href="#" class="text-blue-200 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-3.604-9.438-3.604-13.042 0-3.604 3.604-3.604 9.438 0 13.042 3.604 3.604 9.438 3.604 13.042 0 3.604-3.604 3.604-9.438 0-13.042zM8.707 16.95c.21.21.46.315.7.315.24 0 .49-.105.7-.315l2.793-2.793 2.793 2.793c.21.21.46.315.7.315s.49-.105.7-.315c.42-.42.42-1.103 0-1.523l-2.793-2.793 2.793-2.793c.42-.42.42-1.103 0-1.523-.42-.42-1.103-.42-1.523 0l-2.793 2.793-2.793-2.793c-.42-.42-1.103-.42-1.523 0-.42.42-.42 1.103 0 1.523l2.793 2.793-2.793 2.793c-.42.42-.42 1.103 0 1.523z" /></svg></a>
+                </div>
+            </div>
+            <!-- Columna 2: Empresa -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Empresa</h4>
+                <ul class="space-y-3">
+                    <li><a href="#acerca-de" class="hover:text-white transition-colors">Acerca de Nosotros</a></li>
+                    <li><a href="#blog" class="hover:text-white transition-colors">Blog</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Colaboraciones</a></li>
+                </ul>
+            </div>
+            <!-- Columna 3: Ayuda -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Ayuda</h4>
+                <ul class="space-y-3">
+                    <li><a href="#contacto" class="hover:text-white transition-colors">Contacto</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Preguntas Frecuentes</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Soporte Técnico</a></li>
+                </ul>
+            </div>
+            <!-- Columna 4: Legal -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Legal</h4>
+                <ul class="space-y-3">
+                    <li><a href="#" class="hover:text-white transition-colors">Términos de Servicio</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Política de Privacidad</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 mt-12 border-t border-blue-700 pt-8 text-center">
+            <p class="text-blue-300">&copy; 2025 Refugio. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Script para el menú móvil -->
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const openIcon = document.getElementById('menu-open-icon');
+        const closeIcon = document.getElementById('menu-close-icon');
+
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+        });
+
+        // Script para el formulario de contacto (simulación) - ELIMINADO
+
+        // --- CORRECCIÓN: Script para el Modal de Compra (Restaurado y Corregido) ---
+        const comprarBtn = document.getElementById('comprar-btn');
+        const compraModal = document.getElementById('compra-modal');
+        const cerrarModalBtn = document.getElementById('cerrar-modal-btn');
+        const compraForm = document.getElementById('compra-form');
+        const compraFormMessage = document.getElementById('compra-form-message');
+
+        // Abrir el modal
+        comprarBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevenir que el enlace '#' salte al inicio
+            compraModal.classList.remove('hidden');
+        });
+
+        // Cerrar el modal con el botón X
+        cerrarModalBtn.addEventListener('click', () => {
+            compraModal.classList.add('hidden');
+            // Limpiar mensaje de éxito si existe
+            compraFormMessage.classList.add('hidden');
+            compraForm.classList.remove('hidden');
+            compraForm.reset();
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        compraModal.addEventListener('click', (e) => {
+            if (e.target === compraModal) {
+                compraModal.classList.add('hidden');
+                // Limpiar mensaje de éxito si existe
+                compraFormMessage.classList.add('hidden');
+                compraForm.classList.remove('hidden');
+                compraForm.reset();
+            }
+        });
+
+        // Simular el envío del formulario de compra
+        compraForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevenir el envío real
+            
+            // Mostrar mensaje de éxito
+            compraFormMessage.textContent = '¡Compra exitosa! Gracias por adquirir tu Kit "Mi Refugio". Recibirás un correo de confirmación pronto.';
+            compraFormMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+            compraFormMessage.classList.add('bg-green-100', 'text-green-700');
+            
+            // Ocultar el formulario
+            compraForm.classList.add('hidden');
+            
+            // Opcional: Cerrar el modal después de unos segundos
+            setTimeout(() => {
+                compraModal.classList.add('hidden');
+                compraFormMessage.classList.add('hidden');
+                compraForm.classList.remove('hidden');
+                compraForm.reset();
+            }, 4000); // Cierra después de 4 segundos
+        });
+    </script>
+</body>
+</html>
