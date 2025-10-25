@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>App Refugio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- CAMBIO: Añadida librería Tone.js para generar sonido de alarma -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ESTILOS (CSS) PEGADOS DIRECTAMENTE AQUÍ -->
+    <style>
+        /* Estilos para la App Refugio */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Evita el "rebote" en iOS y asegura que ocupe toda la altura */
+            overscroll-behavior: none;
+            -webkit-tap-highlight-color: transparent; /* Quita el flash gris al tocar en móviles */
+        }
+
+        /* Oculta las barras de scroll */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        html {
+            scrollbar-width: none; /* Para Firefox */
+        }
+
+        /* Color personalizado de la marca */
+        .bg-brand-blue { background-color: #457B9D; }
+        .text-brand-blue { color: #457B9D; }
+        .border-brand-blue { border-color: #457B9D; }
+        .hover\:bg-opacity-90:hover { opacity: 0.9; }
+
+
+        /* --- Estilos de la Barra de Navegación --- */
+
+        .nav-link {
+            flex: 1;
+            text-align: center;
+            padding-top: 0.75rem; /* 12px */
+            padding-bottom: 0.75rem; /* 12px */
+            color: #6B7280; /* text-gray-500 */
+            transition: color 0.2s ease;
+        }
+
+        .nav-link .nav-text {
+            display: block;
+            font-size: 0.75rem; /* 12px */
+            line-height: 1rem; /* 16px */
+            font-weight: 500; /* medium */
+            margin-top: 2px;
+        }
+
+        /* Estilo para la pestaña activa */
+        .nav-link.active {
+            color: #457B9D; /* Azul Sereno (Color personalizado) */
+        }
+        /* Oculta el icono normal cuando está activo */
+        .nav-link.active .nav-icon {
+            display: none;
+        }
+        /* Muestra el icono "fill" (relleno) cuando está activo */
+        .nav-link:not(.active) .nav-icon-active {
+            display: none;
+        }
+
+        /* --- Estilos del Contenido de Pestañas --- */
+
+        /* Ocultar contenido de pestañas por defecto */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            /* Animación de entrada suave */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Estilos del Temporizador Pomodoro --- */
+
+        .timer-circle {
+            /* Circunferencia = 2 * PI * Radio (100) = 628.3... */
+            stroke-dasharray: 628;
+            stroke-dashoffset: 628;
+            transition: stroke-dashoffset 1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .timer-session-btn {
+            flex: 1;
+            padding-top: 0.5rem; /* 8px */
+            padding-bottom: 0.5rem; /* 8px */
+            padding-left: 1rem; /* 16px */
+            padding-right: 1rem; /* 16px */
+            border-radius: 9999px; /* rounded-full */
+            font-size: 0.875rem; /* 14px */
+            line-height: 1.25rem; /* 20px */
+            font-weight: 500; /* medium */
+            color: #4B5563; /* text-gray-600 */
+            transition: all 0.2s ease;
+        }
+
+        /* Estilo del botón de sesión activo */
+        .timer-session-btn.active {
+            background-color: #ffffff; /* bg-white */
+            color: #3B82F6; /* text-blue-600 (ajustado para mejor contraste) */
+            /* shadow */
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* --- Contenedor de Sonidos / Música --- */
+
+        .sound-item-container {
+            background-color: #ffffff;
+            padding: 1rem; /* 16px */
+            border-radius: 1rem; /* 16px (rounded-2xl) */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            /* shadow-sm */
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+
+        .sound-btn, .play-pause-btn {
+            background-color: #E5E7EB; /* bg-gray-200 */
+            border-radius: 9999px; /* rounded-full */
+            width: 2.5rem; /* 40px (w-10) */
+            height: 2.5rem; /* 40px (h-10) */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease;
+        }
+
+        /* Efecto al presionar botones */
+        .sound-btn:active, .play-pause-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* --- Círculo de Respiración --- */
+
+        #breathing-circle.breathing {
+            /* 5 segundos de animación: 2.5s para inhalar (crecer), 2.5s para exhalar (encoger) */
+            animation: breath 5s infinite ease-in-out;
+        }
+
+        @keyframes breath {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        /* --- Estilos para el Reproductor de YouTube --- */
+        #youtube-player-container iframe {
+            width: 100%;
+            height: 256px; /* 16:9 aspect ratio */
+            border-radius: 0.75rem; /* rounded-xl */
+            border: none;
+        }
+
+        /* --- Estilos para Modal de Consejo --- */
+        #consejo-modal-contenido::-webkit-scrollbar {
+            width: 6px;
+            display: block; /* Asegurarse que se muestre en el modal */
+        }
+        #consejo-modal-contenido::-webkit-scrollbar-thumb {
+            background-color: #A8DADC; /* Color secundario */
+            border-radius: 3px;
+        }
+        #consejo-modal-contenido {
+            scrollbar-width: thin; /* Para Firefox */
+            scrollbar-color: #A8DADC #F8F9FA; /* Para Firefox */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col h-screen">
+
+    <!-- Contenido Principal (ocupa todo el espacio menos la barra de navegación) -->
+    <main class="flex-1 overflow-y-auto pb-20">
+
+        <!-- Pestaña 1: Inicio (Activa por defecto) -->
+        <div id="home" class="tab-content active p-6">
+            
+            <!-- ****** CAMBIO: Mensaje de advertencia eliminado ****** -->
+            
+            <header class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <!-- Logo -->
+                    <div class="flex items-center space-x-3">
+                        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M40 85 C50 70, 60 50, 40 20 L40 85 Z" fill="#A8DADC"/>
+                            <path d="M40 20 Q65 10, 80 45 C75 30, 60 25, 40 20 Z" fill="#457B9D"/>
+                        </svg>
+                        <h1 class="text-3xl font-bold text-gray-900">Refugio</h1>
+                    </div>
+                    <!-- Botón de Ajustes -->
+                    <button id="home-btn-settings" class="text-gray-500 hover:text-brand-blue transition-colors">
+                        <i class="ph ph-gear text-3xl"></i>
+                    </button>
+                </div>
+                <h2 class="text-xl font-medium text-gray-700">Bienvenido de nuevo,</h2>
+                <p class="text-gray-500">¿Qué te gustaría hacer hoy?</p>
+            </header>
+
+            <!-- Acceso Rápido (Corregido) -->
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <button id="home-btn-focus" class="bg-blue-100 text-blue-800 p-4 rounded-2xl shadow-sm text-left transition-transform active:scale-95">
+                    <i class="ph ph-timer text-3xl mb-2"></i>
+                    <span class="font-semibold">Iniciar Enfoque</span>
+                    <p class="text-sm opacity-75">Sesión Pomodoro</p>
+                </button>
+                <button id="home-btn-wellness" class="bg-green-100 text-green-800 p-4 rounded-2xl shadow-sm text-left transition-transform active:scale-95">
+                    <i class="ph ph-leaf text-3xl mb-2"></i>
+                    <span class="font-semibold">Bienestar</span>
+                    <p class="text-sm opacity-75">Sonidos y Meditación</p>
+                </button>
+            </div>
+
+            <!-- Diario Reciente (Corregido) -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Tu última nota</h3>
+                <div class="bg-white p-4 rounded-2xl shadow-sm min-h-[80px]">
+                    <p id="journal-snippet" class="text-gray-600 italic">No hay notas recientes. ¡Escribe tu primera nota en el diario!</p>
+                    <button id="home-btn-journal" class="text-sm font-medium text-blue-600 mt-2">Ir al diario</button>
+                </div>
+            </div>
+            
+            <!-- Nueva Sección: Consejos (Funcional) -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Consejos para ti</h3>
+                <div class="bg-white p-4 rounded-2xl shadow-sm space-y-3">
+                    <a href="#" class="consejo-link block p-3 rounded-lg hover:bg-gray-50" 
+                       data-titulo="5 Maneras de Vencer la Procrastinación" 
+                       data-contenido="<p class='mb-4'>La procrastinación es un hábito difícil de romper, pero no imposible. Aquí tienes 5 técnicas basadas en la psicología que realmente funcionan:</p><p class='font-semibold mb-2'>1. La Regla de los 2 Minutos</p><p class='mb-4'>Si una tarea toma menos de dos minutos, hazla inmediatamente. Esto genera un impulso positivo y saca las tareas pequeñas del camino.</p><p class='font-semibold mb-2'>2. Divide y Vencerás</p><p class='mb-4'>Una tarea grande como 'Estudiar para el examen' es abrumadora. Divídela en partes pequeñas y manejables como 'Leer el capítulo 1' o 'Hacer 10 ejercicios'.</p><p class='font-semibold mb-2'>3. La Técnica Pomodoro</p><p class='mb-4'>¡Justo lo que haces en nuestra pestaña de 'Enfoque'! Trabaja intensamente por 25 minutos y luego descansa 5. Es increíblemente efectivo.</p><p class='font-semibold mb-2'>4. Identifica el 'Por Qué'</p><p class='mb-4'>¿Por qué estás posponiendo? ¿Miedo a fallar? ¿Aburrimiento? Entender la raíz del problema te ayuda a solucionarlo.</p><p class='font-semibold mb-2'>5. Perdónate y Sigue Adelante</p><p>Todos procrastinamos. No te castigues por ello. Acéptalo, perdóname y comprométete a empezar de nuevo ahora mismo.</p>">
+                        <span class="text-sm font-semibold text-brand-blue">PRODUCTIVIDAD</span>
+                        <p class="font-semibold text-gray-800">5 Maneras de Vencer la Procrastinación</p>
+                    </a>
+                    <a href="#" class="consejo-link block p-3 rounded-lg hover:bg-gray-50"
+                       data-titulo="Maneja la Ansiedad Antes de un Examen"
+                       data-contenido="<p class='mb-4'>Sentir nervios antes de un examen es normal, pero cuando la ansiedad te bloquea, es un problema. Prueba esto:</p><p class='font-semibold mb-2'>1. Respiración Cuadrada</p><p class='mb-4'>Usa el ejercicio de respiración de nuestra pestaña 'Bienestar'. Inhala contando hasta 4, sostén el aire 4, exhala 4, y espera 4. Repite.</p><p class='font-semibold mb-2'>2. Preparación, no Perfección</p><p class='mb-4'>Estudia para entender, no para memorizar perfectamente. Confía en lo que sabes. Es mejor saber el 80% bien que el 100% a medias.</p><p class='font-semibold mb-2'>3. Visualiza el Éxito</p><p>Cierra los ojos e imagínate sentado en el examen, sintiéndote calmado, recordando la información y entregando la prueba con confianza. Tu mente es poderosa.</p>">
+                        <span class="text-sm font-semibold text-green-600">BIENESTAR</span>
+                        <p class="font-semibold text-gray-800">Maneja la Ansiedad Antes de un Examen</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña 2: Enfoque (Pomodoro) -->
+        <div id="focus" class="tab-content p-6 text-center">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Módulo de Enfoque</h2>
+            <!-- Temporizador Pomodoro -->
+            <div class="relative w-64 h-64 mx-auto mb-6 flex items-center justify-center">
+                <svg class="absolute w-full h-full" viewBox="0 0 220 220">
+                    <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="100" cx="110" cy="110"/>
+                    <circle id="timer-circle" class="timer-circle text-blue-600" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="100" cx="110" cy="110"/>
+                </svg>
+                <div id="timer-display" class="text-5xl font-bold text-gray-900">25:00</div>
+            </div>
+            <!-- Controles del Temporizador -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <button id="start-pause-btn" class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg transition-transform active:scale-95 w-32">
+                    <i class="ph ph-play-fill align-middle text-lg"></i> Iniciar
+                </button>
+                <button id="reset-btn" class="bg-gray-200 text-gray-700 px-6 py-3 rounded-full font-semibold shadow-sm transition-transform active:scale-95">
+                    <i class="ph ph-arrow-counter-clockwise-fill align-middle text-lg"></i>
+                </button>
+            </div>
+            <div class="text-sm text-gray-500 mb-2">Sesión: <span id="session-type" class="font-medium text-gray-700">Enfoque</span></div>
+            <!-- Selector de Sesión -->
+            <div class="bg-gray-200 p-1 rounded-full flex justify-center space-x-1 max-w-xs mx-auto mb-4">
+                <button id="btn-pomodoro" class="timer-session-btn active" data-time="1500" data-type="Enfoque">25m</button>
+                <button id="btn-short-break" class="timer-session-btn" data-time="300" data-type="Descanso C.">5m</button>
+                <button id="btn-long-break" class="timer-session-btn" data-time="900" data-type="Descanso L.">15m</button>
+                <button id="btn-custom" class="timer-session-btn" data-type="Personalizado"><i class="ph ph-pencil-simple"></i></button>
+            </div>
+            
+            <!-- Campo de Tiempo Personalizado (Oculto) -->
+            <div id="custom-time-input" class="max-w-xs mx-auto mb-8 hidden">
+                <label for="custom-minutes" class="text-sm font-medium text-gray-700">Minutos:</label>
+                <input type="number" id="custom-minutes" value="10" min="1" max="120" class="w-full mt-1 p-2 border border-gray-300 rounded-lg text-center">
+                <button id="set-custom-time-btn" class="w-full mt-2 bg-brand-blue text-white py-2 rounded-full font-semibold text-sm transition-transform active:scale-95">Aplicar tiempo</button>
+            </div>
+            
+            <!-- CAMBIO: Todos los elementos <audio> han sido eliminados. La alarma se genera con Tone.js y los sonidos de bienestar usan YouTube. -->
+            
+        </div>
+        
+        <!-- Pestaña 3: Bienestar (NUEVA PESTAÑA UNIFICADA) -->
+        <div id="wellness" class="tab-content p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Módulo de Bienestar</h2>
+            
+            <!-- Sub-sección: Meditación -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Meditación y Calma</h3>
+                <!-- Ejercicio de Respiración -->
+                <div class="bg-blue-600 text-white p-6 rounded-2xl shadow-lg text-center mb-6">
+                    <h3 class="text-xl font-semibold mb-4">Ejercicio de Respiración</h3>
+                    <div id="breathing-circle" class="relative w-24 h-24 mx-auto bg-white/20 rounded-full flex items-center justify-center">
+                        <span id="breathing-text" class="z-10 font-medium">Inhala</span>
+                    </div>
+                    <p class="mt-4 text-sm opacity-80">Sigue el círculo por 1 minuto.</p>
+                    <button id="start-breathing-btn" class="mt-3 bg-white text-blue-700 px-5 py-2 rounded-full font-semibold text-sm transition-transform active:scale-95">Comenzar</button>
+                </div>
+                <!-- Meditaciones Guiadas (Funcionales) -->
+                <div class="space-y-3">
+                    <div class="sound-item-container">
+                        <div class="flex items-center space-x-3">
+                            <i class="ph ph-sparkle text-2xl text-purple-500"></i>
+                            <div>
+                                <span class="font-medium">Reducción de Ansiedad</span>
+                                <p class="text-sm text-gray-500">2 min (Audio real)</p>
+                            </div>
+                        </div>
+                        <button id="meditacion-ansiedad" class="play-pause-btn" data-type="meditation">
+                            <i class="ph ph-play-fill text-gray-700 text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="sound-item-container">
+                        <div class="flex items-center space-x-3">
+                            <i class="ph ph-bed text-2xl text-indigo-500"></i>
+                            <div>
+                                <span class="font-medium">Dormir Mejor</span>
+                                <p class="text-sm text-gray-500">10 min (Audio de Bosque)</p>
+                            </div>
+                        </div>
+                        <button id="meditacion-dormir" class="play-pause-btn" data-type="meditation">
+                            <i class="ph ph-play-fill text-gray-700 text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sub-sección: Sonidos -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Biblioteca de Sonidos</h3>
+                <div class="space-y-3">
+                    <div class="sound-item-container">
+                        <div class="flex items-center space-x-3">
+                            <i class="ph ph-cloud-rain text-2xl text-blue-500"></i>
+                            <span class="font-medium">Lluvia Suave</span>
+                        </div>
+                        <button class="sound-btn" data-sound="rain">
+                            <i class="ph ph-play-fill text-gray-700 text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="sound-item-container">
+                        <div class="flex items-center space-x-3">
+                            <i class="ph ph-tree-evergreen text-2xl text-green-600"></i>
+                            <span class="font-medium">Bosque</span>
+                        </div>
+                        <button class="sound-btn" data-sound="forest">
+                            <i class="ph ph-play-fill text-gray-700 text-xl"></i>
+                        </button>
+                    </div>
+                    <div class="sound-item-container">
+                        <div class="flex items-center space-x-3">
+                            <i class="ph ph-waves text-2xl text-gray-500"></i>
+                            <span class="font-medium">Ruido Blanco</span>
+                        </div>
+                        <button class="sound-btn" data-sound="white-noise">
+                            <i class="ph ph-play-fill text-gray-700 text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña 4: Música (NUEVA PESTAÑA CON YOUTUBE) -->
+        <div id="music" class="tab-content p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Música para Enfoque</h2>
+            
+            <!-- CAMBIO: Buscador de YouTube (NUEVA VERSIÓN ESTABLE) -->
+            <div class="mb-6">
+                <p class="text-gray-600 mb-3 text-center">Busca en YouTube o elige una lista rápida:</p>
+                <div class="flex space-x-2">
+                    <input type="search" id="youtube-search-input" placeholder="Ej: 'música para estudiar'" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue">
+                    <button id="youtube-search-btn" class="bg-brand-blue text-white p-3 rounded-lg shadow-sm transition-transform active:scale-95">
+                        <i class="ph ph-magnifying-glass text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="text-gray-600 mb-4 text-center text-sm">--- O elige una lista probada ---</p>
+            
+            <!-- Botones de listas rápidas (siguen funcionando dentro de la app) -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button id="btn-lofi" class="bg-white text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 text-left">
+                    <i class="ph ph-coffee text-2xl text-yellow-700 mb-1"></i>
+                    <span class="block">Lo-Fi Beats</span>
+                </button>
+                <button id="btn-clasica" class="bg-white text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 text-left">
+                    <i class="ph ph-piano-keys text-2xl text-gray-800 mb-1"></i>
+                    <span class="block">Clásica</span>
+                </button>
+                <button id="btn-lluvia" class="bg-white text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 text-left">
+                    <i class="ph ph-cloud-rain text-2xl text-blue-500 mb-1"></i>
+                    <span class="block">Sonidos de Lluvia</span>
+                </button>
+                <button id="btn-piano" class="bg-white text-gray-700 font-semibold py-3 px-4 rounded-xl shadow-sm border border-gray-200 text-left">
+                    <i class="ph ph-music-notes-simple text-2xl text-purple-500 mb-1"></i>
+                    <span class="block">Piano para Estudiar</span>
+                </button>
+            </div>
+            
+            <!-- Contenedor del Reproductor de YouTube -->
+            <!-- CAMBIO: Texto actualizado para reflejar el nuevo comportamiento -->
+            <div id="youtube-player-container" class="w-full h-64 bg-gray-200 rounded-xl flex items-center justify-center text-gray-500 text-center p-4">
+                <p class="text-lg">Toda la música y meditaciones se abrirán en una **pestaña nueva** de YouTube para asegurar que siempre funcionen.</p>
+            </div>
+        </div>
+
+        <!-- Pestaña 5: Diario -->
+        <div id="journal" class="tab-content p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Diario Personal</h2>
+            <p class="text-gray-600 mb-4">Un espacio privado para organizar tus pensamientos. Tus notas se guardan solo en tu dispositivo.</p>
+            <textarea id="journal-textarea" class="w-full h-96 bg-white rounded-2xl shadow-sm p-4 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="¿Cómo te sientes hoy?"></textarea>
+            <button id="save-journal-btn" class="mt-4 w-full bg-blue-600 text-white py-3 rounded-full font-semibold shadow-lg transition-transform active:scale-95">Guardar Nota</button>
+            <p id="save-status" class="text-center text-green-600 text-sm mt-2 h-4"></p>
+        </div>
+        
+        <!-- Pestaña 6: Ajustes (Ahora oculta y accedida desde Inicio) -->
+        <div id="settings" class="tab-content p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Ajustes</h2>
+            
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Descargar Aplicación</h3>
+                <p class="text-gray-600 mb-5">Instala Refugio en tu dispositivo para acceder más rápido y usarla sin conexión.</p>
+                <button id="install-app-btn" class="w-full bg-brand-blue text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-opacity-90 transition-all text-lg flex items-center justify-center space-x-2">
+                    <i class="ph ph-download-simple text-xl"></i>
+                    <span>Instalar App</span>
+                </button>
+                <p id="install-message" class="text-center text-green-600 text-sm mt-3 h-4"></p>
+            </div>
+            
+             <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Mi Cuenta</h3>
+                 <div class="space-y-3">
+                    <button class="cuenta-btn w-full text-left text-gray-700 font-medium p-3 rounded-lg hover:bg-gray-100">Ver Perfil</button>
+                    <button class="cuenta-btn w-full text-left text-gray-700 font-medium p-3 rounded-lg hover:bg-gray-100">Notificaciones</button>
+                    <button class="cuenta-btn w-full text-left text-red-600 font-medium p-3 rounded-lg hover:bg-red-50">Cerrar Sesión</button>
+                 </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Barra de Navegación Inferior Fija (NUEVA ESTRUCTURA DE 5 ICONOS) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-inner z-10">
+        <div class="flex justify-around max-w-md mx-auto">
+            <button class="nav-link active" data-tab="home">
+                <i class="ph ph-house text-2xl nav-icon"></i>
+                <i class="ph ph-house-fill text-2xl nav-icon-active"></i>
+                <span class="nav-text">Inicio</span>
+            </button>
+            <button class="nav-link" data-tab="focus">
+                <i class="ph ph-timer text-2xl nav-icon"></i>
+                <i class="ph ph-timer-fill text-2xl nav-icon-active"></i>
+                <span class="nav-text">Enfoque</span>
+            </button>
+            <button class="nav-link" data-tab="wellness">
+                <i class="ph ph-leaf text-2xl nav-icon"></i>
+                <i class="ph ph-leaf-fill text-2xl nav-icon-active"></i>
+                <span class="nav-text">Bienestar</span>
+            </button>
+            <button class="nav-link" data-tab="music">
+                <i class="ph ph-music-notes text-2xl nav-icon"></i>
+                <i class="ph ph-music-notes-fill text-2xl nav-icon-active"></i>
+                <span class="nav-text">Música</span>
+            </button>
+            <button class="nav-link" data-tab="journal">
+                <i class="ph ph-book-open-text text-2xl nav-icon"></i>
+                <i class="ph ph-book-open-text-fill text-2xl nav-icon-active"></i>
+                <span class="nav-text">Diario</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Modal de Alerta del Temporizador (Oculto por defecto) -->
+    <div id="timer-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 text-center shadow-xl max-w-sm mx-auto">
+            <i class="ph ph-check-circle-fill text-5xl text-green-500 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">¡Tiempo Terminado!</h3>
+            <p id="modal-message" class="text-gray-600 mb-6">¡Gran trabajo! Has completado una sesión de enfoque.</p>
+            <button id="modal-close-btn" class="w-full bg-blue-600 text-white py-3 rounded-full font-semibold shadow-lg transition-transform active:scale-95">
+                OK
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal de Función (Oculto por defecto) -->
+    <!-- CAMBIO: Se simplifica el modal. Ya no se usa para mostrar errores de audio. -->
+    <div id="feature-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 text-center shadow-xl max-w-sm mx-auto">
+            <i class="ph ph-sparkle-fill text-5xl text-brand-blue mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">¡Próximamente!</h3>
+            <p class="text-gray-600 mb-6">Esta función aún está en desarrollo, pero llegará pronto.</p>
+            <button id="feature-modal-close-btn" class="w-full bg-blue-600 text-white py-3 rounded-full font-semibold shadow-lg transition-transform active:scale-95">
+                Entendido
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal de Consejos (Oculto por defecto) -->
+    <div id="consejo-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-6 z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 text-left shadow-xl max-w-sm mx-auto h-3/4 flex flex-col">
+            <h3 id="consejo-modal-titulo" class="text-2xl font-bold text-gray-900 mb-4">Título del Consejo</h3>
+            <div class="flex-1 overflow-y-auto pr-2" id="consejo-modal-contenido">
+                <p>Contenido del consejo...</p>
+            </div>
+            <button id="consejo-modal-close-btn" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-full font-semibold shadow-lg transition-transform active:scale-95">
+                Cerrar
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT PEGADO DIRECTAMENTE AQUÍ -->
+    <script>
+        // --- Lógica de la App Refugio ---
+
+        // Espera a que todo el HTML esté cargado
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Variables Globales ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const playerContainer = document.getElementById('youtube-player-container');
+            let currentTab = 'home';
+            
+            // Modales
+            const featureModal = document.getElementById('feature-modal');
+            const featureModalCloseBtn = document.getElementById('feature-modal-close-btn');
+            
+            // CAMBIO: Se eliminan las IDs del modal de error, ya no se usa para eso
+            
+            const consejoModal = document.getElementById('consejo-modal');
+            const consejoModalTitulo = document.getElementById('consejo-modal-titulo');
+            const consejoModalContenido = document.getElementById('consejo-modal-contenido');
+            const consejoModalCloseBtn = document.getElementById('consejo-modal-close-btn');
+            
+            // CAMBIO: Eliminados audioPlayers y alarmSound
+            
+            // --- 1. Navegación Principal por Pestañas ---
+
+            // Función para cambiar de pestaña
+            const showTab = (tabId) => {
+                // CAMBIO: Detener video de YouTube
+                if (currentTab === 'music' && tabId !== 'music' && playerContainer) {
+                    playerContainer.innerHTML = '<p class="text-gray-500 text-center p-4">Aquí aparecerá el video de YouTube.</p>';
+                }
+                
+                currentTab = tabId;
+
+                // Ocultar todas las pestañas de contenido
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                // Quitar 'active' de todos los links de navegación
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                // Mostrar la pestaña seleccionada
+                const newTab = document.getElementById(tabId);
+                if (newTab) {
+                    newTab.classList.add('active');
+                }
+                
+                // Marcar el link de navegación seleccionado como activo
+                const newLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+                if (newLink) {
+                    newLink.classList.add('active');
+                }
+
+                // CAMBIO: Detener todos los sonidos de Tone.js al cambiar de pestaña
+                if (currentSoundSynth) {
+                    stopAllSynths();
+                }
+            };
+
+            // Asignar evento a los botones de la barra de navegación
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const tabId = link.getAttribute('data-tab');
+                    showTab(tabId);
+                });
+            });
+
+            // --- Lógica de Modales ---
+            if (featureModalCloseBtn) {
+                featureModalCloseBtn.addEventListener('click', () => {
+                    featureModal.classList.add('hidden');
+                });
+            }
+            if (consejoModalCloseBtn) {
+                consejoModalCloseBtn.addEventListener('click', () => {
+                    consejoModal.classList.add('hidden');
+                });
+            }
+            
+            // Función para mostrar el modal de "Próximamente"
+            function showFeatureModal() {
+                if (featureModal) {
+                    // Restaura el contenido original de "Próximamente"
+                    featureModal.classList.remove('hidden');
+                }
+            }
+            
+            // CAMBIO: Se elimina la función showErrorModal
+            
+            // Función para mostrar el modal de "Consejos"
+            function showConsejoModal(titulo, contenido) {
+                if (consejoModal) {
+                    consejoModalTitulo.textContent = titulo;
+                    consejoModalContenido.innerHTML = contenido;
+                    consejoModal.classList.remove('hidden');
+                }
+            }
+
+            // --- Corrección del Error: Asignar eventos a botones de Inicio ---
+            const homeBtnFocus = document.getElementById('home-btn-focus');
+            const homeBtnWellness = document.getElementById('home-btn-wellness');
+            const homeBtnJournal = document.getElementById('home-btn-journal');
+            const homeBtnSettings = document.getElementById('home-btn-settings');
+
+            if(homeBtnFocus) homeBtnFocus.addEventListener('click', () => showTab('focus'));
+            if(homeBtnWellness) homeBtnWellness.addEventListener('click', () => showTab('wellness'));
+            if(homeBtnJournal) homeBtnJournal.addEventListener('click', () => showTab('journal'));
+            if(homeBtnSettings) homeBtnSettings.addEventListener('click', () => showTab('settings'));
+            
+            // --- Asignar eventos a botones de "Mi Cuenta" (Funcional) ---
+            const cuentaBtns = document.querySelectorAll('.cuenta-btn');
+            cuentaBtns.forEach(btn => {
+                btn.addEventListener('click', showFeatureModal);
+            });
+            
+            // --- Asignar eventos a enlaces de "Consejos" (Funcional) ---
+            const consejoLinks = document.querySelectorAll('.consejo-link');
+            consejoLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const titulo = link.dataset.titulo || "Consejo";
+                    const contenido = link.dataset.contenido || "<p>No se pudo cargar el contenido.</p>";
+                    showConsejoModal(titulo, contenido);
+                });
+            });
+
+            // --- 2. Lógica del Diario y Página de Inicio ---
+            const journalTextarea = document.getElementById('journal-textarea');
+            const saveJournalBtn = document.getElementById('save-journal-btn');
+            const saveStatus = document.getElementById('save-status');
+            const journalSnippet = document.getElementById('journal-snippet');
+            const JOURNAL_KEY = 'refugioJournal';
+
+            function loadJournal() {
+                if (!journalTextarea) return; // Salir si no estamos en la página del diario
+                const savedNote = localStorage.getItem(JOURNAL_KEY);
+                if (savedNote) {
+                    journalTextarea.value = savedNote;
+                    // Actualizar la página de inicio
+                    if (journalSnippet) {
+                        if (savedNote.trim().length > 0) {
+                            journalSnippet.textContent = `"${savedNote.substring(0, 75)}..."`;
+                            journalSnippet.classList.remove('italic');
+                        } else {
+                            journalSnippet.textContent = "No hay notas recientes. ¡Escribe tu primera nota en el diario!";
+                            journalSnippet.classList.add('italic');
+                        }
+                    }
+                }
+            }
+            
+            if (saveJournalBtn) {
+                saveJournalBtn.addEventListener('click', () => {
+                    localStorage.setItem(JOURNAL_KEY, journalTextarea.value);
+                    saveStatus.textContent = '¡Nota guardada con éxito!';
+                    loadJournal(); // Recargar la página de inicio y el diario
+                    setTimeout(() => {
+                        saveStatus.textContent = '';
+                    }, 2000);
+                });
+            }
+
+            // Cargar al iniciar
+            loadJournal();
+
+            // --- 3. Lógica de Bienestar (Respiración) ---
+            const startBreathingBtn = document.getElementById('start-breathing-btn');
+            const breathingCircle = document.getElementById('breathing-circle');
+            const breathingText = document.getElementById('breathing-text');
+            let breathingInterval;
+
+            if (startBreathingBtn) {
+                startBreathingBtn.addEventListener('click', () => {
+                    if (breathingCircle.classList.contains('breathing')) {
+                        // Detener
+                        breathingCircle.classList.remove('breathing');
+                        startBreathingBtn.textContent = 'Comenzar';
+                        breathingText.textContent = 'Inhala';
+                        clearInterval(breathingInterval);
+                    } else {
+                        // Iniciar
+                        breathingCircle.classList.add('breathing');
+                        startBreathingBtn.textContent = 'Detener';
+                        breathingText.textContent = 'Inhala'; // Estado inicial
+                        
+                        // Cambiar texto a la mitad de la animación (2.5s)
+                        setTimeout(() => { breathingText.textContent = 'Exhala'; }, 2500);
+                        
+                        // Repetir cada 5 segundos
+                        breathingInterval = setInterval(() => {
+                            breathingText.textContent = 'Inhala';
+                            setTimeout(() => { breathingText.textContent = 'Exhala'; }, 2500);
+                        }, 5000);
+                    }
+                });
+            }
+
+            // --- 4. Lógica de Sonidos (Reales) ---
+            // CAMBIO: Toda la lógica de audioPlayers, soundButtons, audioElements,
+            // stopAllAudio y resetAllPlayButtons ha sido eliminada.
+            // Ahora se usa la función openYoutube (definida más abajo) y Tone.js
+            
+            // --- 5. Lógica de Meditación (¡Ahora funcional!) ---
+            // CAMBIO: Lógica de playPauseButtons eliminada.
+
+            // --- Funciones Auxiliares de Audio ---
+            // CAMBIO: Funciones stopAllAudio y resetAllPlayButtons eliminadas.
+            // Se añadirán nuevas funciones para Tone.js en la sección 10.
+
+            // --- 6. Lógica del Temporizador Pomodoro ---
+            const timerDisplay = document.getElementById('timer-display');
+            const startPauseBtn = document.getElementById('start-pause-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const timerCircle = document.getElementById('timer-circle');
+            const allSessionButtons = document.querySelectorAll('.timer-session-btn'); // TODOS los botones
+            const presetSessionButtons = document.querySelectorAll('.timer-session-btn[data-time]'); // Solo los presets
+            const sessionTypeDisplay = document.getElementById('session-type');
+            
+            // Botones de tiempo personalizado
+            const btnCustom = document.getElementById('btn-custom');
+            const customTimeInputDiv = document.getElementById('custom-time-input');
+            const customMinutesInput = document.getElementById('custom-minutes');
+            const setCustomTimeBtn = document.getElementById('set-custom-time-btn');
+            
+            // Modal del temporizador
+            const timerModal = document.getElementById('timer-modal');
+            const modalMessage = document.getElementById('modal-message');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            let totalTime = 1500; // 25 minutos por defecto
+            let timeRemaining = totalTime;
+            let timerInterval = null;
+            let isPaused = true;
+            let currentSessionType = "Enfoque";
+            const circleCircumference = 628; // 2 * PI * 100
+
+            function updateDisplay() {
+                if (!timerDisplay) return;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                const progress = (totalTime - timeRemaining) / totalTime;
+                const offset = circleCircumference * (1 - progress);
+                if (timerCircle) {
+                    timerCircle.style.strokeDashoffset = offset;
+                }
+            }
+            
+            // CAMBIO: Nueva función para reproducir la alarma con Tone.js
+            let alarmSynth = null;
+            function playAlarmSound() {
+                if (!alarmSynth) {
+                    alarmSynth = new Tone.Synth().toDestination();
+                }
+                // Tocar una serie de notas
+                const now = Tone.now();
+                alarmSynth.triggerAttackRelease("C5", "0.3s", now);
+                alarmSynth.triggerAttackRelease("C5", "0.3s", now + 0.5);
+                alarmSynth.triggerAttackRelease("C5", "0.3s", now + 1.0);
+            }
+
+
+            function startTimer() {
+                if (isPaused) {
+                    isPaused = false;
+                    startPauseBtn.innerHTML = '<i class="ph ph-pause-fill align-middle text-lg"></i> Pausar';
+                    
+                    // CAMBIO: Detener sonidos de Tone.js si están sonando
+                    if (currentSoundSynth) {
+                        stopAllSynths();
+                    }
+
+                    timerInterval = setInterval(() => {
+                        timeRemaining--;
+                        updateDisplay();
+                        
+                        if (timeRemaining <= 0) {
+                            clearInterval(timerInterval);
+                            
+                            // CAMBIO: Llamar a la nueva función de alarma
+                            playAlarmSound();
+                            
+                            showTimerModal();
+                            // Lógica para cambiar automáticamente a descanso
+                            if (currentSessionType === "Enfoque") {
+                                const shortBreakBtn = document.getElementById('btn-short-break');
+                                if (shortBreakBtn) shortBreakBtn.click();
+                            } else {
+                                const pomodoroBtn = document.getElementById('btn-pomodoro');
+                                if (pomodoroBtn) pomodoroBtn.click();
+                            }
+                        }
+                    }, 1000);
+                }
+            }
+
+            function pauseTimer() {
+                isPaused = true;
+                startPauseBtn.innerHTML = '<i class="ph ph-play-fill align-middle text-lg"></i> Iniciar';
+                clearInterval(timerInterval);
+            }
+
+            function resetTimer(newTime, newType, newButton) {
+                clearInterval(timerInterval);
+                isPaused = true;
+                totalTime = newTime;
+                timeRemaining = totalTime;
+                currentSessionType = newType;
+                updateDisplay();
+                if (startPauseBtn) {
+                    startPauseBtn.innerHTML = '<i class="ph ph-play-fill align-middle text-lg"></i> Iniciar';
+                }
+                if (sessionTypeDisplay) {
+                    sessionTypeDisplay.textContent = newType;
+                }
+                
+                // Actualizar estilos de botones de sesión
+                allSessionButtons.forEach(btn => btn.classList.remove('active'));
+                if (newButton) {
+                    newButton.classList.add('active');
+                }
+            }
+            
+            function showTimerModal() {
+                if (!timerModal) return;
+                modalMessage.textContent = `¡Gran trabajo! Has completado una sesión de ${currentSessionType.toLowerCase()}.`;
+                timerModal.classList.remove('hidden');
+            }
+            
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', () => {
+                    timerModal.classList.add('hidden');
+                });
+            }
+
+            if (startPauseBtn) {
+                startPauseBtn.addEventListener('click', () => {
+                    
+                    // CAMBIO: Iniciar Tone.js (requerido por el navegador al interactuar)
+                    if (Tone.context.state !== 'running') {
+                        Tone.start();
+                    }
+                    
+                    if (isPaused) {
+                        startTimer();
+                    } else {
+                        pauseTimer();
+                    }
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    const activeButton = document.querySelector('.timer-session-btn.active');
+                    if (activeButton) {
+                        if (activeButton.id === 'btn-custom') {
+                            // Si el botón activo es el personalizado, resetea a su valor
+                            let minutes = parseInt(customMinutesInput.value) || 10;
+                            resetTimer(minutes * 60, `${minutes} min`, btnCustom);
+                        } else {
+                            // Resetea al preset
+                            resetTimer(
+                                parseInt(activeButton.dataset.time), 
+                                activeButton.dataset.type, 
+                                activeButton
+                            );
+                        }
+                    }
+                });
+            }
+
+            // --- Nueva Lógica para Botones de Sesión ---
+
+            // 1. Botones de Presets (25, 5, 15 min)
+            presetSessionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Ocultar input personalizado
+                    if (customTimeInputDiv) {
+                        customTimeInputDiv.classList.add('hidden');
+                    }
+                    // Resetear el temporizador al preset
+                    const newTime = parseInt(button.dataset.time);
+                    const newType = button.dataset.type;
+                    resetTimer(newTime, newType, button);
+                });
+            });
+
+            // 2. Botón de Tiempo Personalizado (...)
+            if (btnCustom) {
+                btnCustom.addEventListener('click', () => {
+                    // Mostrar input
+                    if (customTimeInputDiv) {
+                        customTimeInputDiv.classList.remove('hidden');
+                    }
+                    // Pausar y resetear visualmente
+                    pauseTimer();
+                    allSessionButtons.forEach(btn => btn.classList.remove('active'));
+                    btnCustom.classList.add('active');
+                    
+                    // Sincronizar el temporizador con el valor actual del input
+                    let minutes = parseInt(customMinutesInput.value) || 10;
+                    const newTimeInSeconds = minutes * 60;
+                    const newType = `${minutes} min`;
+                    
+                    totalTime = newTimeInSeconds;
+                    timeRemaining = newTimeInSeconds;
+                    currentSessionType = newType;
+                    sessionTypeDisplay.textContent = newType;
+                    updateDisplay();
+                });
+            }
+
+            // 3. Botón de "Aplicar" tiempo personalizado
+            if (setCustomTimeBtn) {
+                setCustomTimeBtn.addEventListener('click', () => {
+                    let minutes = parseInt(customMinutesInput.value);
+                    if (isNaN(minutes) || minutes < 1) minutes = 1;
+                    if (minutes > 120) minutes = 120; // Límite de 2 horas
+                    customMinutesInput.value = minutes;
+                    
+                    const newTimeInSeconds = minutes * 60;
+                    const newType = `${minutes} min`;
+                    
+                    // Resetear el temporizador con el nuevo valor
+                    resetTimer(newTimeInSeconds, newType, btnCustom);
+                });
+            }
+            
+            // Inicializar vista del temporizador
+            updateDisplay();
+            
+            // --- 7. Lógica de "Descarga" de App (Simulación) ---
+            const installBtn = document.getElementById('install-app-btn');
+            const installMessage = document.getElementById('install-message');
+
+            if (installBtn) {
+                installBtn.addEventListener('click', () => {
+                    const textContent = `¡Bienvenido a Refugio!\n\nEsta es una simulación de la instalación de la app.\nAl 'instalarla' como una Aplicación Web Progresiva (PWA), aparecerá en tu pantalla de inicio como una app normal.\n\n¡Disfruta tu calma!`;
+                    const blob = new Blob([textContent], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Instalar_Refugio_App.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    // Mostrar mensaje de éxito
+                    if (installMessage) {
+                        installMessage.textContent = '¡Descarga de simulación iniciada!';
+                        setTimeout(() => {
+                            installMessage.textContent = '';
+                        }, 3000);
+                    }
+                });
+            }
+            
+            // --- 8. Lógica del Reproductor de YouTube (Botones) ---
+            const btnLofi = document.getElementById('btn-lofi');
+            const btnClasica = document.getElementById('btn-clasica');
+            const btnLluvia = document.getElementById('btn-lluvia');
+            const btnPiano = document.getElementById('btn-piano');
+            
+            // CAMBIO: Eliminar la función openYoutube
+
+            // CAMBIO: Nueva función para cargar video de YouTube en la app
+            // CAMBIO: Función loadYoutubeVideo eliminada.
+            
+            // CAMBIO: Nueva función para cargar una LISTA de YouTube (para búsqueda)
+            // CAMBIO: Función loadYoutubePlaylist eliminada.
+
+            // CAMBIO: Nueva función para ABRIR YOUTUBE EN PESTAÑA NUEVA (100% estable)
+            function openYoutubeInNewTab(query) {
+                const url = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+                window.open(url, '_blank');
+            }
+
+
+            if (btnLofi) {
+                btnLofi.addEventListener('click', () => {
+                    // CAMBIO: Ahora abre en una pestaña nueva
+                    openYoutubeInNewTab('lo-fi beats to study to');
+                });
+            }
+            
+            if (btnClasica) {
+                btnClasica.addEventListener('click', () => {
+                    // CAMBIO: Ahora abre en una pestaña nueva
+                    openYoutubeInNewTab('classical music for studying');
+                });
+            } // <-- ***** CORRECCIÓN 1: Faltaba esta '}' de cierre *****
+            
+            // ***** CORRECCIÓN 2: Cambiado comentario HTML (<!--) a JS (//) *****
+            // AÑADIDO: Eventos para los nuevos botones
+            if (btnLluvia) {
+                btnLluvia.addEventListener('click', () => {
+                    // CAMBIO: Ahora abre en una pestaña nueva
+                    openYoutubeInNewTab('rain sounds for sleeping');
+                });
+            }
+
+            /* ***** CORRECCIÓN 3: Cambiado comentario HTML (<!--) a JS (/*) *****
+             ***** CORRECCIÓN DE ERROR *****
+             'If' estaba en mayúscula, causando un SyntaxError. Corregido a 'if'.
+            */
+            if (btnPiano) {
+                btnPiano.addEventListener('click', () => {
+                    // CAMBIO: Ahora abre en una pestaña nueva
+                    openYoutubeInNewTab('piano for studying');
+                });
+            }
+            
+            // --- 9. Lógica del Buscador de YouTube (NUEVA VERSIÓN ESTABLE) ---
+            const youtubeSearchInput = document.getElementById('youtube-search-input');
+            const youtubeSearchBtn = document.getElementById('youtube-search-btn');
+
+            function performYoutubeSearch() {
+                const searchTerm = youtubeSearchInput.value.trim();
+                if (searchTerm) {
+                    // CAMBIO: Carga la lista de búsqueda en el iframe
+                    openYoutubeInNewTab(searchTerm);
+                    youtubeSearchInput.value = ''; // Limpia el buscador
+                }
+            }
+
+            if (youtubeSearchBtn) {
+                youtubeSearchBtn.addEventListener('click', performYoutubeSearch);
+            }
+            
+            if (youtubeSearchInput) {
+                // Permite buscar con la tecla "Enter"
+                youtubeSearchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        performYoutubeSearch();
+                    }
+                });
+            }
+            
+            // --- 10. NUEVA LÓGICA PARA SONIDOS DE BIENESTAR (USANDO YOUTUBE) ---
+            
+            // --- Funciones de Sonido de Tone.js ---
+            let soundSynths = { rain: null, forest: null, 'white-noise': null };
+            let currentSoundSynth = null; // Para saber cuál está sonando
+            
+            // Función para inicializar los sintetizadores de sonido (se crean al primer clic)
+            function getSoundSynth(soundType) {
+                if (soundSynths[soundType]) {
+                    return soundSynths[soundType];
+                }
+                
+                let synth;
+                if (soundType === 'rain') {
+                    // "Lluvia" se simula mejor con ruido rosa (pink noise)
+                    synth = new Tone.Noise("pink").toDestination();
+                    synth.volume.value = -12; // Bajar el volumen, el ruido es fuerte
+                } else if (soundType === 'forest') {
+                    // "Bosque" se simula con ruido marrón (brown noise)
+                    synth = new Tone.Noise("brown").toDestination();
+                    synth.volume.value = -16;
+                } else if (soundType === 'white-noise') {
+                    // "Ruido Blanco" es ruido blanco (white noise)
+                    synth = new Tone.Noise("white").toDestination();
+                    synth.volume.value = -20; // El ruido blanco es muy agudo
+                }
+                
+                soundSynths[soundType] = synth;
+                return synth;
+            }
+            
+            const allSoundButtons = document.querySelectorAll('.sound-btn');
+
+            // Función para detener todos los sonidos de sintetizador
+            function stopAllSynths() {
+                Object.values(soundSynths).forEach(synth => {
+                    if (synth) synth.stop();
+                });
+                currentSoundSynth = null;
+                // Resetear todos los íconos de play
+                allSoundButtons.forEach(btn => {
+                    const icon = btn.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('ph-pause-fill');
+                        icon.classList.add('ph-play-fill');
+                    }
+                });
+            }
+
+            // Botones de meditación (CAMBIO: ahora van a la pestaña de música)
+            const btnAnsiedad = document.getElementById('meditacion-ansiedad');
+            const btnDormir = document.getElementById('meditacion-dormir');
+            
+            if (btnAnsiedad) {
+                btnAnsiedad.addEventListener('click', () => {
+                    // 1. Ir a la pestaña de música
+                    // CAMBIO: Ya no va a la pestaña de música, solo abre el enlace
+                    // 2. CAMBIO: Cargar una lista de búsqueda de meditación
+                    openYoutubeInNewTab('meditacion guiada ansiedad 5 minutos');
+                });
+            }
+            if (btnDormir) {
+                btnDormir.addEventListener('click', () => {
+                    // 1. Ir a la pestaña de música
+                    // CAMBIO: Ya no va a la pestaña de música, solo abre el enlace
+                    // 2. CAMBIO: Cargar una lista de búsqueda de música para dormir
+                    openYoutubeInNewTab('musica para dormir profundamente');
+                });
+            }
+
+            // CAMBIO: Botones de sonidos (¡AHORA USAN TONE.JS!)
+            allSoundButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Iniciar el contexto de audio si no lo ha hecho
+                    if (Tone.context.state !== 'running') {
+                        Tone.start();
+                    }
+
+                    const soundType = button.dataset.sound;
+                    const synth = getSoundSynth(soundType);
+                    const icon = button.querySelector('i');
+
+                    // Si hay un sonido sonando y NO es este, detenerlo
+                    if (currentSoundSynth && currentSoundSynth !== synth) {
+                        stopAllSynths();
+                    }
+
+                    // Controlar el sonido actual
+                    if (synth.state === "stopped") {
+                        synth.start();
+                        icon.classList.remove('ph-play-fill');
+                        icon.classList.add('ph-pause-fill');
+                        currentSoundSynth = synth;
+                    } else {
+                        synth.stop();
+                        icon.classList.remove('ph-pause-fill');
+                        icon.classList.add('ph-play-fill');
+                        currentSoundSynth = null;
+                    }
+                });
+            });
+
+
+        }); // Fin de DOMContentLoaded
+    </script>
+</body>
+</html>
